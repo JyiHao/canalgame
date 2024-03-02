@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>模拟水运游戏</title>
+    <style>
+        #moneyDisplay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        #ships {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+        }
+        #goods {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .ship, .good {
+            margin: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="moneyDisplay">金钱: 100</div><br>
+    <div id="Timer">时间：90秒</div>
+    <div id="ships">
+        <button class="ship" data-load="0">船1</button><br>
+        <button class="ship" data-load="0">船2</button><br>
+        <button class="ship" data-load="0">船3</button><br>
+    </div>
+    <div id="goods">
+        <button class="good">货物1</button>
+        <button class="good">货物2</button>
+        <button class="good">货物3</button>
+        <button class="good">货物4</button>
+        <button class="good">货物5</button>
+    </div>
+
+    <script>
+        let money = 100;
+        let selectedGood = null;
+        let scorepoint=0
+
+        document.querySelectorAll('.ship').forEach(ship => {
+            ship.addEventListener('click', function() {
+                if (selectedGood && this.dataset.load < 4) {
+                    this.dataset.load++;
+                    selectedGood = null;
+
+                }
+            });
+
+            ship.addEventListener('dblclick', function() {
+                if (this.dataset.load > 0) {
+                    money += ((20 * this.dataset.load)-30); // 货物金钱
+                    scorepoint += (20*this.dataset.load)
+                    this.dataset.load = 0;
+                    updateMoneyDisplay();
+                    // 船冷却
+                    this.classList.add('hidden');
+                    setTimeout(() => {
+                        this.classList.remove('hidden');
+                    }, 5000);
+                }
+            });
+        });
+
+        document.querySelectorAll('.good').forEach(good => {
+            good.addEventListener('click', function() {
+                selectedGood = this;
+                // 货物冷却
+                this.classList.add('hidden');
+                setTimeout(() => {
+                    this.classList.remove('hidden');
+                }, 2500);
+            });
+        });
+        function gameend(){
+            if(time<=0){
+                document.getElementById('Timer').textContent=("游戏结束，分数为"+String(scorepoint+money))
+                alert("游戏结束，分数为"+String(scorepoint+money))
+            }
+        }
+        function updateMoneyDisplay() {
+            document.getElementById('moneyDisplay').textContent = `金钱: ${money}`;
+        }
+        let time= 90
+        setInterval(()=>{
+            time--
+            document.getElementById('Timer').textContent=("时间："+String(time)+"秒")
+            if (time<=0){
+                gameend()
+            }
+        },1000)
+    </script>
+</body>
+</html>
